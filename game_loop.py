@@ -33,7 +33,7 @@ def main():
         for player in players:
             if player.folded or player.is_all_in:
                 continue
-            print(f"player {player.name} hand: {' '.join([c.to_colored_str() for c in player.hand])}")
+            print(f"player {player.name} hand: {' '.join([c.to_colored_str() for c in player.hand])}, community cards: {' '.join([c.to_colored_str() for c in community_cards])}")
             flag, bet = player.ask_bet(current_bet)
             if flag == 1:
                 print(f"player {player.name} bet: {bet}")
