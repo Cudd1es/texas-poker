@@ -9,7 +9,7 @@ def main():
     deck = create_deck()
     shuffle_deck(deck)
 
-    hands, deck = deal_card(deck, num_players=2)
+    hands, deck = deal_card(deck, num_players=len(players))
     for i, player in enumerate(players):
         player.hand = hands[i]
         #debug
@@ -17,16 +17,33 @@ def main():
         #!debug
     pot = 0
     current_bet = 0
-    for player in players:
-        flag, bet = player.ask_bet(current_bet)
-        if flag == 1:
-            print(f"player {player.name} bet: {bet}")
-        elif flag == -1:
-            print(f"player {player.name} has folded")
-        elif flag == 0:
-            print(f"player {player.name} is all in")
-        current_bet = bet
-        pot += bet
+    community_cards = []
+    rounds = 5
+    for r in range(rounds):
+        match r:
+            case 1:
+                community_cards.append(deck.pop())
+                community_cards.append(deck.pop())
+            case 0:
+                pass
+            case _:
+                community_cards.append(deck.pop())
+        print("="*8 + f"round: {r + 1}" + "="*8)
+        print(f"pot: {pot}")
+        print(f"current bet: {current_bet}")
+        print(f"community cards: {' '.join([c.to_colored_str() for c in community_cards])}")
+        print("="*16)
+        for player in players:
+            print(f"player {player.name} hand: {' '.join([c.to_colored_str() for c in player.hand])}")
+            flag, bet = player.ask_bet(current_bet)
+            if flag == 1:
+                print(f"player {player.name} bet: {bet}")
+            elif flag == -1:
+                print(f"player {player.name} has folded")
+            elif flag == 0:
+                print(f"player {player.name} is all in")
+            current_bet = bet
+            pot += bet
 
 if __name__ == "__main__":
     main()
