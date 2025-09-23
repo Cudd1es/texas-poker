@@ -8,7 +8,6 @@ def main():
 
     deck = create_deck()
     shuffle_deck(deck)
-
     hands, deck = deal_card(deck, num_players=len(players))
     for i, player in enumerate(players):
         player.hand = hands[i]
@@ -18,22 +17,22 @@ def main():
     pot = 0
     current_bet = 0
     community_cards = []
-    rounds = 5
-    for r in range(rounds):
-        match r:
-            case 1:
+    round_names = ["Pre-flop", "Flop", "Turn", "River"]
+    for r, round_name in enumerate(round_names):
+        if round_name == "Flop":
+            for _ in range(3):
                 community_cards.append(deck.pop())
-                community_cards.append(deck.pop())
-            case 0:
-                pass
-            case _:
-                community_cards.append(deck.pop())
-        print("="*8 + f"round: {r + 1}" + "="*8)
+        elif round_name in ["Turn", "River"]:
+            community_cards.append(deck.pop())
+
+        print("="*8 + f" round: {round_name} " + "="*8)
         print(f"pot: {pot}")
         print(f"current bet: {current_bet}")
         print(f"community cards: {' '.join([c.to_colored_str() for c in community_cards])}")
         print("="*16)
         for player in players:
+            if player.folded or player.is_all_in:
+                continue
             print(f"player {player.name} hand: {' '.join([c.to_colored_str() for c in player.hand])}")
             flag, bet = player.ask_bet(current_bet)
             if flag == 1:
