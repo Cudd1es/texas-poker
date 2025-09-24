@@ -58,7 +58,7 @@ class Player:
                         return 0, all_in_chips
                     elif bet.lower() == 'f':
                         self.fold()
-                        return -1, 0
+                        return -1, current_bet
                     elif bet.lower() == 'c':
                         if current_bet == 0:
                             print("please enter a valid bet.")
