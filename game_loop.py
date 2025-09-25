@@ -1,3 +1,5 @@
+from math import floor
+
 from deck import create_deck, shuffle_deck, deal_card, sort_hand
 from player import Player
 from poker_hand import evaluate_hand, compare_hands
@@ -44,19 +46,28 @@ def main():
                 print(f"player {player.name} is all in")
             current_bet = bet
             pot += bet
-        player_hands = []
-        for player in players:
-            player_hand = player.hand + community_cards
-            player_hands.append(player_hand)
-            highest_hand = evaluate_hand(player_hand)
-            print(f"player {player.name} hand: {' '.join([c.to_colored_str() for c in player_hand])}, highest hand: {highest_hand}")
+            #debug
+            print(f"####DEBUG: player {player.name}: chips: {player.chips}")
+            #!debug
+    player_hands = []
+    for player in players:
+        player_hand = player.hand + community_cards
+        player_hands.append(player_hand)
+        highest_hand = evaluate_hand(player_hand)
+        print(f"player {player.name} hand: {' '.join([c.to_colored_str() for c in player_hand])}, highest hand: {highest_hand}")
 
-        winners, winning_rank, winning_points = compare_hands(player_hands)
-        print(f"winners: {winners}, winning rank: {winning_rank}, winning points: {winning_points}")
+    winners, winning_rank, winning_points = compare_hands(player_hands)
+    print(f"winners: {winners}, winning rank: {winning_rank}, winning points: {winning_points}")
 
-        for winner in winners:
-            print(f"winner: {players[winner].name}")
-        print(f"winning rank: {winning_rank}, {winning_points}")
+    cnt_winners = len(winners)
+    winning_chips = floor(pot / cnt_winners)
+    print("winner:")
+    for winner in winners:
+        print(f"{players[winner].name} wins {winning_chips} chips")
+        players[winner].chips += winning_chips
+        print(players[winner].chips)
+    print(f"winning rank: {winning_rank}, {winning_points}")
+
 
 
 if __name__ == "__main__":
