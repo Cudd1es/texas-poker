@@ -65,7 +65,7 @@ def main():
     for winner in winners:
         print(f"{players[winner].name} wins {winning_chips} chips")
         players[winner].chips += winning_chips
-        print(players[winner].chips)
+        print(f"current chips: {players[winner].chips}")
     print(f"winning rank: {winning_rank}, {winning_points}")
 
 
