@@ -1,10 +1,10 @@
 class Player:
-    def __init__(self, name:str, position, is_human=False):
+    def __init__(self, name:str, position):
         self.name = name
         self.position = position
         self.hand = []
         self.chips = 100
-        self.is_human = is_human
+        self.is_human = False
         self.folded = False
         self.is_all_in = False
         self.current_bet = 0
@@ -38,7 +38,55 @@ class Player:
     def __repr__(self):
         return f"Player({self.name}, chips={self.chips}, hand={self.hand}, folded={self.folded})"
 
-    def ask_bet(self, current_bet:int):
+
+class AIPlayer(Player):
+    def __init__(self, name: str, position):
+        super().__init__(name, position)
+        self.is_human = False
+
+    def ask_bet(self, current_bet: int, winrate = -1):
+        print(f"my winrate is {winrate}, analyzing...")
+        # all in strategy
+        if winrate > 0.7:
+            print("I will all in")
+            all_in_chips = self.all_in()
+            return 0, all_in_chips
+        # fold strategy
+        elif winrate < 0.2:
+            print("I will fold")
+            self.fold()
+            return -1, current_bet
+        # raise strategy
+        elif winrate > 0.5:
+            if self.chips <= current_bet + 5:
+                print("I will all in")
+                all_in_chips = self.all_in()
+                return 0, all_in_chips
+            else:
+                bet = current_bet + 5
+                self.bet(bet)
+                return 1, bet
+        # check strategy
+        else:
+            if self.chips <= current_bet or self.chips <= 5:
+                print("I will all in")
+                all_in_chips = self.all_in()
+                return 0, all_in_chips
+            elif current_bet == 0:
+                bet = 5
+                self.bet(bet)
+                return 1, bet
+            else:
+                print("I will check")
+                self.bet(current_bet)
+                return 1, current_bet
+
+
+class HumanPlayer(Player):
+    def __init__(self, name:str, position):
+        super().__init__(name, position)
+        self.is_human = True
+    def ask_bet(self, current_bet:int, winrate = -1):
         """
         returns:
         flag: status signal, -1: fold, 0: all in, 1: bet

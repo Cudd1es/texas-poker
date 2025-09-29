@@ -1,16 +1,17 @@
 from math import floor
 from deck import create_deck, shuffle_deck, deal_card, sort_hand
-from player import Player
+from player import Player, HumanPlayer, AIPlayer
 from poker_hand import evaluate_hand, compare_hands
 from predict import simulate_win_rate
 
 MAX_ROUNDS = 100
 
 def main():
-    player1 = Player('p1', position='SB', is_human = True)
-    player2 = Player('p2', position='BB', is_human = True)
-    player3 = Player('p3', position='-', is_human = True)
-    players = [player1, player2, player3]
+    players = [
+        HumanPlayer("p1", position='SB'),
+        HumanPlayer("p2", position='BB'),
+        AIPlayer("p3", position='-')
+    ]
 
     round_num = 1
     while sum(p.chips > 0 for p in players) > 1 and round_num < MAX_ROUNDS:
@@ -60,7 +61,7 @@ def main():
                 _, _, winrate = simulate_win_rate(player.hand, community_cards, len(alive_players))
                 print(f"current winrate: {winrate}")
 
-                flag, bet = player.ask_bet(current_bet)
+                flag, bet = player.ask_bet(current_bet, winrate)
                 if flag == 1:
                     print(f"player {player.name} bet: {bet}")
                     pot += bet
@@ -98,6 +99,7 @@ def main():
                 #print(f"winners: {winners}, winning rank: {winning_rank}, winning points: {winning_points}")
                 cnt_winners = len(winners)
                 winning_chips = floor(pot / cnt_winners)
+                leftover = pot - winning_chips * cnt_winners
                 print("winner:")
                 for idx in winners:
                     winner = existing_players[idx]
@@ -105,6 +107,8 @@ def main():
                     winner.chips += winning_chips
                     print(f"current chips: {winner.chips}")
                 print(f"winning rank: {winning_rank}, {winning_points}")
+                if leftover > 0:
+                    existing_players[winners[0]].chips += leftover
 
         print(f"=== Chips after round ===")
         for p in players:
