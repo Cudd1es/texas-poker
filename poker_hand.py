@@ -133,4 +133,9 @@ def compare_hands(hands:list[list[Card]]):
                 highest_player.append(i)
         else:
             continue
-    return highest_player, highest_rank, highest_points
+    return highest_player, highest_rank, ','.join(point_repr(p) for p in highest_points)
+
+def point_repr(point):
+    face = {11: 'J', 12: 'Q', 13: 'K', 14: 'A'}
+    v = face.get(point, str(point))
+    return str(v)
