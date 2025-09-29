@@ -69,28 +69,38 @@ def main():
                 #debug
                 print(f"####DEBUG: player {player.name}: chips: {player.chips}")
                 #!debug
-        player_hands = []
-        existing_players = []
-        for player in alive_players:
-            if not player.folded:
-                player_hand = player.hand + community_cards
-                player_hands.append(player_hand)
-                existing_players.append(player)
-                highest_hand = evaluate_hand(player_hand)
-                print(f"player {player.name} hand: {' '.join([c.to_colored_str() for c in player_hand])}, highest hand: {highest_hand}")
+        unfolded_players = [p for p in alive_players if not p.folded]
+        # fold check
+        if len(unfolded_players) == 1:
+            winner = unfolded_players[0]
+            print(f"player {winner.name} wins as all others folded")
+            winner.chips += pot
+            print(f"{winner.name} wins {pot} chips")
+            print(f"current chips: {winner.chips}")
+        else:
+            # normal compare
+            player_hands = []
+            existing_players = []
+            for player in alive_players:
+                if not player.folded:
+                    player_hand = player.hand + community_cards
+                    player_hands.append(player_hand)
+                    existing_players.append(player)
+                    highest_hand = evaluate_hand(player_hand)
+                    print(f"player {player.name} hand: {' '.join([c.to_colored_str() for c in player_hand])}, highest hand: {highest_hand}")
 
-        if player_hands:
-            winners, winning_rank, winning_points = compare_hands(player_hands)
-            #print(f"winners: {winners}, winning rank: {winning_rank}, winning points: {winning_points}")
-            cnt_winners = len(winners)
-            winning_chips = floor(pot / cnt_winners)
-            print("winner:")
-            for idx in winners:
-                winner = existing_players[idx]
-                print(f"{winner.name} wins {winning_chips} chips")
-                winner.chips += winning_chips
-                print(f"current chips: {winner.chips}")
-            print(f"winning rank: {winning_rank}, {winning_points}")
+            if player_hands:
+                winners, winning_rank, winning_points = compare_hands(player_hands)
+                #print(f"winners: {winners}, winning rank: {winning_rank}, winning points: {winning_points}")
+                cnt_winners = len(winners)
+                winning_chips = floor(pot / cnt_winners)
+                print("winner:")
+                for idx in winners:
+                    winner = existing_players[idx]
+                    print(f"{winner.name} wins {winning_chips} chips")
+                    winner.chips += winning_chips
+                    print(f"current chips: {winner.chips}")
+                print(f"winning rank: {winning_rank}, {winning_points}")
 
         print(f"=== Chips after round ===")
         for p in players:
