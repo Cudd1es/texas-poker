@@ -45,9 +45,9 @@ class AIPlayer(Player):
         self.is_human = False
 
     def ask_bet(self, current_bet: int, winrate = -1):
-        print(f"my winrate is {winrate}, analyzing...")
+        print(f"my winrate is {winrate}, ships left: {self.chips}, analyzing...")
         # all in strategy
-        if winrate > 0.7:
+        if winrate > 0.8:
             print("I will all in")
             all_in_chips = self.all_in()
             return 0, all_in_chips

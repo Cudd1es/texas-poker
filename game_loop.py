@@ -15,7 +15,7 @@ def main():
 
     round_num = 1
     while sum(p.chips > 0 for p in players) > 1 and round_num < MAX_ROUNDS:
-        print(f'\n\n ======== [Round {round_num}] ========')
+        print(f'\n\n======== [Round {round_num}] ========')
 
         # reset players
         for p in players:
@@ -42,9 +42,10 @@ def main():
             elif round_name in ["Turn", "River"]:
                 community_cards.append(deck.pop())
 
+            print()
             print("="*8 + f" round: {round_name} " + "="*8)
-            print(f"pot: {pot}")
-            print(f"current bet: {current_bet}")
+            print(f"pot: {pot}, current_bet: {current_bet}")
+            #print(f"current bet: {current_bet}")
             print(f"community cards: {' '.join([c.to_colored_str() for c in community_cards])}")
             print("="*16)
 
@@ -56,7 +57,7 @@ def main():
             for player in alive_players:
                 if player.folded or player.is_all_in:
                     continue
-                print(f"player {player.name} hand: {' '.join([c.to_colored_str() for c in player.hand])}, community cards: {' '.join([c.to_colored_str() for c in community_cards])}")
+                print(f"\nplayer {player.name} hand: {' '.join([c.to_colored_str() for c in player.hand])}, community cards: {' '.join([c.to_colored_str() for c in community_cards])}")
                 # add prediction
                 _, _, winrate = simulate_win_rate(player.hand, community_cards, len(alive_players))
                 print(f"current winrate: {winrate}")
@@ -72,7 +73,7 @@ def main():
                     pot += bet
                 current_bet = max(current_bet, bet)
                 #debug
-                print(f"####DEBUG: player {player.name}: chips: {player.chips}")
+                #print(f"####DEBUG: player {player.name}: chips: {player.chips}")
                 #!debug
         unfolded_players = [p for p in alive_players if not p.folded]
         # fold check
