@@ -46,6 +46,12 @@ def main():
             print(f"current bet: {current_bet}")
             print(f"community cards: {' '.join([c.to_colored_str() for c in community_cards])}")
             print("="*16)
+
+            active_players = [p for p in alive_players if not p.folded and not p.is_all_in]
+            if len(active_players) == 1:
+                print("only one player left, skipping.")
+                break
+
             for player in alive_players:
                 if player.folded or player.is_all_in:
                     continue
@@ -53,12 +59,13 @@ def main():
                 flag, bet = player.ask_bet(current_bet)
                 if flag == 1:
                     print(f"player {player.name} bet: {bet}")
+                    pot += bet
                 elif flag == -1:
                     print(f"player {player.name} has folded")
                 elif flag == 0:
                     print(f"player {player.name} is all in")
-                current_bet = bet
-                pot += bet
+                    pot += bet
+                current_bet = max(current_bet, bet)
                 #debug
                 print(f"####DEBUG: player {player.name}: chips: {player.chips}")
                 #!debug
