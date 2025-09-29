@@ -1,8 +1,8 @@
 from math import floor
-
 from deck import create_deck, shuffle_deck, deal_card, sort_hand
 from player import Player
 from poker_hand import evaluate_hand, compare_hands
+from predict import simulate_win_rate
 
 MAX_ROUNDS = 100
 
@@ -56,6 +56,10 @@ def main():
                 if player.folded or player.is_all_in:
                     continue
                 print(f"player {player.name} hand: {' '.join([c.to_colored_str() for c in player.hand])}, community cards: {' '.join([c.to_colored_str() for c in community_cards])}")
+                # add prediction
+                _, _, winrate = simulate_win_rate(player.hand, community_cards, len(alive_players))
+                print(f"current winrate: {winrate}")
+
                 flag, bet = player.ask_bet(current_bet)
                 if flag == 1:
                     print(f"player {player.name} bet: {bet}")
