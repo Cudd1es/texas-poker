@@ -149,12 +149,14 @@ def betting_round(players, community_cards, pot, round_name):
                 acted = {p: False for p in players}
             acted[player] = True
 
-        print(f"current bet {current_bet}")
-        for p in players:
-            print(f"{p.name} , {p.current_bet}, acted: {acted[p]}")
-        print(f"last raiser idx: {last_raiser_idx}")
-        if last_raiser_idx is not None:
-            print (f"{acted[players[last_raiser_idx]]}")
+        #debug
+        #print(f"current bet {current_bet}")
+        #for p in players:
+        #    print(f"{p.name} , {p.current_bet}, acted: {acted[p]}")
+        #print(f"last raiser idx: {last_raiser_idx}")
+        #if last_raiser_idx is not None:
+        #    print (f"{acted[players[last_raiser_idx]]}")
+        #!debug
         if all(p.folded or p.is_all_in or p.current_bet == current_bet for p in players):
             if last_raiser_idx is None:
                 if all(acted[p] for p in players):
