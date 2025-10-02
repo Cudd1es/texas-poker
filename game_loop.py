@@ -111,6 +111,11 @@ def betting_round(players, community_cards, pot, round_name):
     last_raiser_idx = None
     acted = {p: False for p in players}
     player_idx = 0
+
+    active_players = [p for p in players if not p.folded and not p.is_all_in and p.chips > 0]
+    if len(active_players) <= 1:
+        return pot
+
     while True:
         # skip all in / fold
         player = players[player_idx % num_players]
@@ -120,6 +125,7 @@ def betting_round(players, community_cards, pot, round_name):
             continue
 
         # predict winrate
+        print(f"your hand: {' '.join([c.to_colored_str() for c in player.hand])}, community cards: {' '.join([c.to_colored_str() for c in community_cards])}")
         _, _, winrate = simulate_win_rate(player.hand, community_cards, num_players)
         print(f"current winrate: {winrate}")
         flag, bet = player.ask_bet(current_bet, winrate)
@@ -143,9 +149,6 @@ def betting_round(players, community_cards, pot, round_name):
                 acted = {p: False for p in players}
             acted[player] = True
 
-        active_players = [p for p in players if not p.folded and not p.is_all_in and p.chips > 0]
-        if len(active_players) <= 1:
-            break
         print(f"current bet {current_bet}")
         for p in players:
             print(f"{p.name} , {p.current_bet}, acted: {acted[p]}")

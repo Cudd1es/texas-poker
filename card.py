@@ -34,8 +34,8 @@ class Card:
         suit_color = {
             's': '\033[34m',  # Blue
             'h': '\033[31m',  # Red
-            'c': '\033[34m',  # Blue
-            'd': '\033[31m',  # Red
+            'c': '\033[36m',  # Cyan
+            'd': '\033[35m',  # Magenta
         }
         color = suit_color.get(self.suit, '\033[0m')
         s = self.__repr__()
