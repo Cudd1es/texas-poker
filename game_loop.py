@@ -1,6 +1,6 @@
 from math import floor
-from deck import create_deck, shuffle_deck, deal_card, sort_hand
-from player import Player, HumanPlayer, AIPlayer
+from deck import create_deck, shuffle_deck, deal_card
+from player import HumanPlayer, AIPlayer
 from poker_hand import evaluate_hand, compare_hands
 from predict import simulate_win_rate
 
@@ -53,28 +53,9 @@ def main():
             if len(active_players) == 1:
                 print("only one player left, skipping.")
                 break
+            # betting round
+            pot = betting_round(alive_players, community_cards, pot, round_name)
 
-            for player in alive_players:
-                if player.folded or player.is_all_in:
-                    continue
-                print(f"\nplayer {player.name} hand: {' '.join([c.to_colored_str() for c in player.hand])}, community cards: {' '.join([c.to_colored_str() for c in community_cards])}")
-                # add prediction
-                _, _, winrate = simulate_win_rate(player.hand, community_cards, len(alive_players))
-                print(f"current winrate: {winrate}")
-
-                flag, bet = player.ask_bet(current_bet, winrate)
-                if flag == 1:
-                    print(f"player {player.name} bet: {bet}")
-                    pot += bet
-                elif flag == -1:
-                    print(f"player {player.name} has folded")
-                elif flag == 0:
-                    print(f"player {player.name} is all in")
-                    pot += bet
-                current_bet = max(current_bet, bet)
-                #debug
-                #print(f"####DEBUG: player {player.name}: chips: {player.chips}")
-                #!debug
         unfolded_players = [p for p in alive_players if not p.folded]
         # fold check
         if len(unfolded_players) == 1:
@@ -121,6 +102,65 @@ def main():
     for p in players:
         print(f"{p.name} chips: {p.chips}")
 
+def betting_round(players, community_cards, pot, round_name):
+    print(f"\n==== {round_name} ====")
+    current_bet = 0
+    for player in players:
+        player.current_bet = 0
+    num_players = len(players)
+    last_raiser_idx = None
+    acted = {p: False for p in players}
+    player_idx = 0
+    while True:
+        # skip all in / fold
+        player = players[player_idx % num_players]
+        if player.folded or player.is_all_in or player.chips == 0:
+            acted[player] = True
+            player_idx += 1
+            continue
+
+        # predict winrate
+        _, _, winrate = simulate_win_rate(player.hand, community_cards, num_players)
+        print(f"current winrate: {winrate}")
+        flag, bet = player.ask_bet(current_bet, winrate)
+        if flag == 1: # raise/call/check
+            print(f"player {player.name} bet: {bet}")
+            pot += bet
+            if player.current_bet > current_bet:
+                current_bet = player.current_bet
+                last_raiser_idx = player_idx % num_players
+                acted = {p: False for p in players}
+            acted[player] = True
+        elif flag == -1: # fold
+            print(f"player {player.name} has folded")
+            acted[player] = True
+        elif flag == 0: # all in
+            print(f"player {player.name} is all in")
+            pot += bet
+            if player.current_bet > current_bet:
+                current_bet = player.current_bet
+                last_raiser_idx = player_idx % num_players
+                acted = {p: False for p in players}
+            acted[player] = True
+
+        active_players = [p for p in players if not p.folded and not p.is_all_in and p.chips > 0]
+        if len(active_players) <= 1:
+            break
+        print(f"current bet {current_bet}")
+        for p in players:
+            print(f"{p.name} , {p.current_bet}, acted: {acted[p]}")
+        print(f"last raiser idx: {last_raiser_idx}")
+        if last_raiser_idx is not None:
+            print (f"{acted[players[last_raiser_idx]]}")
+        if all(p.folded or p.is_all_in or p.current_bet == current_bet for p in players):
+            if last_raiser_idx is None:
+                if all(acted[p] for p in players):
+                    break
+            elif acted[players[last_raiser_idx]]:
+                break
+
+        player_idx += 1
+    return pot
 
 
 if __name__ == "__main__":

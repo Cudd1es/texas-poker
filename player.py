@@ -3,7 +3,7 @@ class Player:
         self.name = name
         self.position = position
         self.hand = []
-        self.chips = 100
+        self.chips = 1000
         self.is_human = False
         self.folded = False
         self.is_all_in = False
@@ -45,41 +45,45 @@ class AIPlayer(Player):
         self.is_human = False
 
     def ask_bet(self, current_bet: int, winrate = -1):
-        print(f"my winrate is {winrate}, ships left: {self.chips}, analyzing...")
+        call_amount = current_bet - self.current_bet
+        print(f"my winrate is {winrate}, chips left: {self.chips}, analyzing...")
         # all in strategy
         if winrate > 0.8:
             print("I will all in")
             all_in_chips = self.all_in()
             return 0, all_in_chips
         # fold strategy
-        elif winrate < 0.2:
+        elif winrate < 0.15:
             print("I will fold")
             self.fold()
-            return -1, current_bet
+            return -1, 0
         # raise strategy
         elif winrate > 0.5:
-            if self.chips <= current_bet + 5:
-                print("I will all in")
-                all_in_chips = self.all_in()
-                return 0, all_in_chips
-            else:
-                bet = current_bet + 5
-                self.bet(bet)
-                return 1, bet
-        # check strategy
-        else:
-            if self.chips <= current_bet or self.chips <= 5:
-                print("I will all in")
-                all_in_chips = self.all_in()
-                return 0, all_in_chips
-            elif current_bet == 0:
-                bet = 5
-                self.bet(bet)
-                return 1, bet
-            else:
+            if self.current_bet > 0 and call_amount == 0:
                 print("I will check")
-                self.bet(current_bet)
-                return 1, current_bet
+                return 1, 0
+            raise_amount = 5
+            if self.chips <= current_bet + raise_amount:
+                print("I will all in")
+                all_in_chips = self.all_in()
+                return 0, all_in_chips
+            else:
+                bet = call_amount + raise_amount
+                self.bet(bet)
+                return 1, bet
+        # call/check strategy
+        else:
+            if call_amount == 0:
+                print("I will check")
+                return 1, 0
+            if self.chips <= call_amount or self.chips <= 5:
+                print("I will all in")
+                all_in_chips = self.all_in()
+                return 0, all_in_chips
+            else:
+                print("I will call")
+                self.bet(call_amount)
+                return 1, call_amount
 
 
 class HumanPlayer(Player):
@@ -89,45 +93,46 @@ class HumanPlayer(Player):
     def ask_bet(self, current_bet:int, winrate = -1):
         """
         returns:
-        flag: status signal, -1: fold, 0: all in, 1: bet
+        flag: status signal, -1: fold, 0: all in, 1: bet/check/call
         bet: value of chips amount for bet
         """
+        call_amount = current_bet - self.current_bet
         if self.is_all_in:
-            return 0, current_bet
+            return 0, 0
         elif self.folded:
-            return -1, current_bet
+            return -1, 0
         else:
             while True:
-                print(f"current chips: {self.chips}, current bet: {current_bet}")
-                bet = input(f"{self.name}, please enter the bet for this round ('c' to check 'a' to all in, 'f' to fold): ")
-                if bet.isalpha():
-                    if bet.lower() == 'a':
-                        all_in_chips = self.all_in()
-                        return 0, all_in_chips
-                    elif bet.lower() == 'f':
-                        self.fold()
-                        return -1, current_bet
-                    elif bet.lower() == 'c':
-                        if current_bet == 0:
-                            print("please enter a valid bet.")
-                            continue
-                        else:
-                            if current_bet > self.chips:
-                                print("not enough chips")
-                                continue
-                            else:
-                                self.bet(current_bet)
-                                return 1, current_bet
-                    else:
-                        print(f"[x] please enter a valid bet.")
-                elif bet.isdigit():
-                    bet = int(bet)
-                    if bet < current_bet:
-                        print("raise must be higher than current bet")
-                        continue
-                    elif bet > self.chips:
+                print(f"current chips: {self.chips}, current bet: {current_bet}, call needed: {call_amount}")
+                action = input(f"{self.name}, enter the bet for this round ('c' to call, 'k' to check, 'a' to all in, 'f' to fold): ")
+                if action == "f":
+                    self.fold()
+                    return -1, 0
+                elif action == "a":
+                    all_in_chips = self.all_in()
+                    return 0, all_in_chips
+                elif action == "c":
+                    if call_amount > self.chips:
                         print("not enough chips")
                         continue
                     else:
-                        self.bet(bet)
-                        return 1, bet
+                        self.bet(call_amount)
+                        return 1, call_amount
+                elif action == "k":
+                    if call_amount == 0:
+                        return 1, 0
+                    else:
+                        print("you need to call or fold")
+                        continue
+                elif action.isdigit():
+                    bet_amount = int(action)
+                    if bet_amount < call_amount:
+                        print("bet must be higher than call amount")
+                        continue
+                    if bet_amount >self.chips:
+                        print("not enough chips")
+                        continue
+                    self.bet(bet_amount)
+                    return 1, bet_amount
+                else:
+                    print(f"[x] please enter a valid bet.")
