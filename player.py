@@ -11,6 +11,7 @@ class Player:
         self.folded = False
         self.is_all_in = False
         self.current_bet = 0
+        self.raised = False
 
     def bet(self, amount):
         if amount > self.chips:
@@ -37,6 +38,7 @@ class Player:
         self.is_all_in = False
         self.current_bet = 0
         self.hand = []
+        self.raised = False
 
     def __repr__(self):
         return f"Player({self.name}, chips={self.chips}, hand={self.hand}, folded={self.folded})"
@@ -48,7 +50,6 @@ class AIPlayer(Player):
         self.is_human = False
 
     def ask_bet(self, current_bet: int, winrate = -1):
-        raised = False
         call_amount = current_bet - self.current_bet
         print(f"my winrate is {winrate}, chips left: {self.chips}, analyzing...")
         # all in strategy
@@ -63,18 +64,22 @@ class AIPlayer(Player):
             return -1, 0
         # raise strategy
         elif winrate > 0.5:
-            if (self.current_bet > 0 and call_amount == 0) or raised:
+            if self.current_bet > 0 and call_amount == 0:
                 print("I will check")
                 return 1, 0
             raise_amount = max(5, floor(self.chips * 0.1))
-            if self.chips <= current_bet + raise_amount:
+            if self.chips <= current_bet + raise_amount or self.chips <= call_amount:
                 print("I will all in")
                 all_in_chips = self.all_in()
                 return 0, all_in_chips
             else:
+                if self.raised:  # if raised in this round, just call for the further raise
+                    print("I will call")
+                    self.bet(call_amount)
+                    return 1, call_amount
                 bet = call_amount + raise_amount
                 self.bet(bet)
-                raised = True
+                self.raised = True
                 return 1, bet
         # call/check strategy
         else:
