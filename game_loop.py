@@ -9,7 +9,7 @@ MAX_ROUNDS = 100
 def main():
     players = [
         HumanPlayer("p1", position='SB'),
-        HumanPlayer("p2", position='BB'),
+        AIPlayer("p2", position='BB'),
         AIPlayer("p3", position='-')
     ]
 
@@ -149,14 +149,14 @@ def betting_round(players, community_cards, pot, round_name):
                 acted = {p: False for p in players}
             acted[player] = True
 
-        #debug
-        #print(f"current bet {current_bet}")
-        #for p in players:
+        # debug
+        # print(f"current bet {current_bet}")
+        # for p in players:
         #    print(f"{p.name} , {p.current_bet}, acted: {acted[p]}")
-        #print(f"last raiser idx: {last_raiser_idx}")
-        #if last_raiser_idx is not None:
+        # print(f"last raiser idx: {last_raiser_idx}")
+        # if last_raiser_idx is not None:
         #    print (f"{acted[players[last_raiser_idx]]}")
-        #!debug
+        # !debug
         if all(p.folded or p.is_all_in or p.current_bet == current_bet for p in players):
             if last_raiser_idx is None:
                 if all(acted[p] for p in players):

@@ -1,3 +1,6 @@
+from math import floor
+
+
 class Player:
     def __init__(self, name:str, position):
         self.name = name
@@ -45,6 +48,7 @@ class AIPlayer(Player):
         self.is_human = False
 
     def ask_bet(self, current_bet: int, winrate = -1):
+        raised = False
         call_amount = current_bet - self.current_bet
         print(f"my winrate is {winrate}, chips left: {self.chips}, analyzing...")
         # all in strategy
@@ -59,10 +63,10 @@ class AIPlayer(Player):
             return -1, 0
         # raise strategy
         elif winrate > 0.5:
-            if self.current_bet > 0 and call_amount == 0:
+            if (self.current_bet > 0 and call_amount == 0) or raised:
                 print("I will check")
                 return 1, 0
-            raise_amount = 5
+            raise_amount = max(5, floor(self.chips * 0.1))
             if self.chips <= current_bet + raise_amount:
                 print("I will all in")
                 all_in_chips = self.all_in()
