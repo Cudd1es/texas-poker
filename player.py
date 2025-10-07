@@ -74,6 +74,7 @@ class AIPlayer(Player):
             else:
                 bet = call_amount + raise_amount
                 self.bet(bet)
+                raised = True
                 return 1, bet
         # call/check strategy
         else:
