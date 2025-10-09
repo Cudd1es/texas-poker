@@ -127,7 +127,8 @@ def betting_round(players, community_cards, pot, round_name):
         # predict winrate
         print(f"your hand: {' '.join([c.to_colored_str() for c in player.hand])}, community cards: {' '.join([c.to_colored_str() for c in community_cards])}")
         _, _, winrate = simulate_win_rate(player.hand, community_cards, num_players)
-        print(f"current winrate: {winrate}")
+        if not player.is_human:
+            print(f"current winrate: {winrate}")
         flag, bet = player.ask_bet(current_bet, winrate)
         if flag == 1: # raise/call/check
             print(f"player {player.name} bet: {bet}")

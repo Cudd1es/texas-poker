@@ -67,7 +67,7 @@ class AIPlayer(Player):
             if self.current_bet > 0 and call_amount == 0:
                 print("I will check")
                 return 1, 0
-            raise_amount = max(5, floor(self.chips * 0.1))
+            raise_amount = max(5, floor(self.chips * 0.2 * winrate))
             if self.chips <= current_bet + raise_amount or self.chips <= call_amount:
                 print("I will all in")
                 all_in_chips = self.all_in()
