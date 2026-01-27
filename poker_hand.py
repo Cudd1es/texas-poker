@@ -57,9 +57,18 @@ def evaluate_hand(cards: list[Card]) -> (str, list[int]):
         return ("Four of a Kind", [quads, kicker])
 
     # check full house
-    if 3 in value_counter.values() and 2 in value_counter.values():
-        trips = max([v for v, c in value_counter.items() if c == 3])
-        pair = max([v for v, c in value_counter.items() if c == 2])
+    # check full house
+    trips_list = [v for v, c in value_counter.items() if c == 3]
+    pairs_list = [v for v, c in value_counter.items() if c == 2]
+
+    if len(trips_list) == 2:
+        trips_list.sort(reverse=True)
+        trips = trips_list[0]
+        pair = trips_list[1]
+        return ("Full House", [trips, pair])
+    elif len(trips_list) == 1 and len(pairs_list) >= 1:
+        trips = trips_list[0]
+        pair = max(pairs_list)
         return ("Full House", [trips, pair])
 
     # check flush
@@ -95,6 +104,12 @@ def evaluate_hand(cards: list[Card]) -> (str, list[int]):
 
 def get_straight(vals):
     vals = sorted(set(vals), reverse=True)
+    # check for A-5 straight (Wheel)
+    if 14 in vals:
+        wheel = [14, 5, 4, 3, 2]
+        if all(x in vals for x in wheel):
+            return [5, 4, 3, 2, 1]
+
     for i in range(len(vals)-4):
         ret = vals[i:i+5]
         if ret[0] - ret[4] == 4:

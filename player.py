@@ -12,6 +12,7 @@ class Player:
         self.is_all_in = False
         self.current_bet = 0
         self.raised = False
+        self.total_bet_this_hand = 0
 
     def bet(self, amount):
         if amount > self.chips:
@@ -19,6 +20,7 @@ class Player:
             return False
         self.chips -= amount
         self.current_bet += amount
+        self.total_bet_this_hand += amount
         return True
 
     def win_chips(self, amount):
@@ -39,6 +41,7 @@ class Player:
         self.current_bet = 0
         self.hand = []
         self.raised = False
+        self.total_bet_this_hand = 0
 
     def __repr__(self):
         return f"Player({self.name}, chips={self.chips}, hand={self.hand}, folded={self.folded})"

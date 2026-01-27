@@ -1,3 +1,5 @@
+import sys
+sys.path.append('..')
 from collections import Counter
 from poker_hand import evaluate_hand
 from card import Card
