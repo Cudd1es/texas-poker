@@ -17,7 +17,9 @@ class Card:
         self.value = value
 
     def __lt__(self, other):
-        return self.value < other.value
+        if self.value != other.value:
+            return self.value < other.value
+        return self.SUITS.index(self.suit) < self.SUITS.index(other.suit)
 
     def __eq__(self, other):
         return self.value == other.value and self.suit == other.suit
