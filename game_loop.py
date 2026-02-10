@@ -126,7 +126,15 @@ def betting_round(players, community_cards, pot, round_name):
     if len(active_players) <= 1:
         return pot
 
+    max_iterations = num_players * 10
+    iteration = 0
+
     while True:
+        iteration += 1
+        if iteration > max_iterations:
+            print(f"WARNING: betting round exceeded {max_iterations} iterations, forcing break")
+            break
+
         player = players[player_idx % num_players]
         
         # skip inactive

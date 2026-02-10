@@ -88,9 +88,10 @@ def display_players(players, active_player_idx=None, user_winrate=None):
         # IF ai player hand is passed, we render it. In game_loop we sort of leaked it via print.
         # Let's make it mimic real game: only show Human hand.
         
-        hand_render = render_cards(p.hand)
-        if not p.is_human and not p.hand: # if hand is empty/hidden
-             hand_render = Text("XX XX", style="dim")
+        if p.is_human:
+            hand_render = render_cards(p.hand) if p.hand else Text("--", style="dim")
+        else:
+            hand_render = Text("XX XX", style="dim")
         
         table.add_row(
             p.position,

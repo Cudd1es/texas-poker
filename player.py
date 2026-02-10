@@ -67,10 +67,11 @@ class AIPlayer(Player):
             return -1, 0
         # raise strategy
         elif winrate > 0.5:
-            if self.current_bet > 0 and call_amount == 0:
+            raise_amount = max(5, floor(self.chips * 0.2 * winrate))
+            if call_amount == 0 and self.raised:
+                # Already raised this round and no one re-raised, just check
                 print("I will check")
                 return 1, 0
-            raise_amount = max(5, floor(self.chips * 0.2 * winrate))
             if self.chips <= current_bet + raise_amount or self.chips <= call_amount:
                 print("I will all in")
                 all_in_chips = self.all_in()
