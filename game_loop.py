@@ -1,5 +1,5 @@
 from math import floor
-from deck import create_deck, shuffle_deck, deal_card
+from deck import create_deck, shuffle_deck, deal_hands
 from player import HumanPlayer, AIPlayer
 from poker_hand import evaluate_hand, compare_hands
 from predict import simulate_win_rate
@@ -26,7 +26,7 @@ def main():
         # deal deck
         deck = create_deck()
         shuffle_deck(deck)
-        hands, deck = deal_card(deck, num_players=len(alive_players))
+        hands, deck = deal_hands(deck, num_players=len(alive_players))
         for i, player in enumerate(alive_players):
             player.hand = hands[i]
             # No print, UI will show

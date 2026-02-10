@@ -10,7 +10,7 @@ def test_wheel_straight():
     ]
     rank, values = evaluate_hand(cards)
     assert rank == "Straight"
-    assert values == [5, 4, 3, 2, 1]
+    assert values == [5, 4, 3, 2, 14]
 
 
 def test_dual_trips_full_house():

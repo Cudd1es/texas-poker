@@ -16,7 +16,7 @@ HAND_RANKS = {
 }
 
 
-def evaluate_hand(cards: list[Card]) -> (str, list[int]):
+def evaluate_hand(cards: list[Card]) -> tuple[str, list[int]]:
     """
     input: a list of cards to check
     output: a tuple with the hand name and list of card ranks
@@ -56,7 +56,6 @@ def evaluate_hand(cards: list[Card]) -> (str, list[int]):
         kicker = max([v for v in values if v != quads])
         return ("Four of a Kind", [quads, kicker])
 
-    # check full house
     # check full house
     trips_list = [v for v, c in value_counter.items() if c == 3]
     pairs_list = [v for v, c in value_counter.items() if c == 2]
@@ -108,7 +107,7 @@ def get_straight(vals):
     if 14 in vals:
         wheel = [14, 5, 4, 3, 2]
         if all(x in vals for x in wheel):
-            return [5, 4, 3, 2, 1]
+            return [5, 4, 3, 2, 14]
 
     for i in range(len(vals)-4):
         ret = vals[i:i+5]
@@ -127,9 +126,6 @@ def compare_hands(hands:list[list[Card]]):
     for i in range(len(hands)):
         hand = hands[i]
         rank, points = evaluate_hand(hand)
-        #debug
-        #print(f"DEBUG: i: {i}, rank: {rank}, points: {points}")
-        #!debug
         if not highest_rank:
             highest_rank = rank
             highest_points = points
